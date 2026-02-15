@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
 import { v4 as uuidv4 } from 'uuid'
 import { jwt, sign } from 'hono/jwt'
+import { logger } from 'hono/logger'
+import { streamText } from 'hono/streaming'
 import {
   getProducts,
   getProduct,
@@ -13,8 +15,22 @@ import type { Product } from './types'
 const app = new Hono()
 const JWT_SECRET = 'it-is-a-secret'
 
+app.use(logger())
+
 app.get('/', (c) => {
   return c.text('Hello Hono!')
+})
+
+app.get('/stream', (c) => {
+  return streamText(c, async (stream) => {
+    const responseText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n`
+
+    const words = responseText.split(' ')
+    for (const word of words) {
+      await stream.write(word + ' ')
+      await stream.sleep(50) // 50ms delay per word
+    }
+  })
 })
 
 // Auth Route
