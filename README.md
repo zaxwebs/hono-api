@@ -37,6 +37,11 @@ The server will start at `http://localhost:3000`.
 | `PUT` | `/products/:id` | Update a product | **Yes** |
 | `DELETE` | `/products/:id` | Delete a product | **Yes** |
 
+### Streaming
+
+- **GET /stream**
+  - Streams "Lorem ipsum" text word-by-word (simulating ChatGPT) using text streaming.
+
 **Note:** For protected routes, include the header `Authorization: Bearer <your_token>`.
 
 ## Database

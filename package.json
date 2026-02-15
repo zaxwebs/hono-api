@@ -8,7 +8,6 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "@types/uuid": "^11.0.0"
+    "@types/bun": "latest"
   }
 }
