@@ -11,6 +11,8 @@ import {
   deleteProduct,
 } from './products'
 import type { Product } from './types'
+import { zValidator } from '@hono/zod-validator'
+import { createProductSchema, updateProductSchema } from './validators'
 
 const app = new Hono()
 const JWT_SECRET = 'it-is-a-secret'
@@ -70,8 +72,8 @@ app.get('/products/:id', (c) => {
 app.use('/products/*', jwt({ secret: JWT_SECRET, alg: 'HS256' }))
 
 // POST /products - Protected
-app.post('/products', async (c) => {
-  const body = await c.req.json()
+app.post('/products', zValidator('json', createProductSchema), async (c) => {
+  const body = c.req.valid('json')
   const newProduct: Product = {
     id: uuidv4(),
     name: body.name,
@@ -83,9 +85,9 @@ app.post('/products', async (c) => {
 })
 
 // PUT /products/:id - Protected
-app.put('/products/:id', async (c) => {
+app.put('/products/:id', zValidator('json', updateProductSchema), async (c) => {
   const id = c.req.param('id')
-  const body = await c.req.json()
+  const body = c.req.valid('json')
   const updatedProduct = updateProduct(id, body)
   if (!updatedProduct) {
     return c.json({ message: 'Product not found' }, 404)
